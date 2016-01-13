@@ -557,9 +557,7 @@ surfman_plugin_t surfman_plugin = {
 
     .options = {
         64,   /* libDRM requires a 64 bytes alignment (not 64bit ;). */
-        0     /* TODO: SURFMAN_FEATURE_NEED_REFRESH triggers a cache-incohrency with xenfb2
-                       and foreign method (looks like scrambling when moving something on the screen.
-                       I thought this was fixed with linux-pq.git:master/enable-pat. */
+        SURFMAN_FEATURE_NEED_REFRESH
     },
     .notify = SURFMAN_NOTIFY_NONE
 };

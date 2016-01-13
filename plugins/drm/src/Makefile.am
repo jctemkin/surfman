@@ -23,6 +23,7 @@ SRCS =	drm-plugin.c			\
 	device-intel.c			\
 	framebuffer-dumb.c		\
 	framebuffer-i915_foreign.c	\
+	framebuffer-i915.c	\
 	monitor.c			\
 	udev.c				\
 	hotplug.c			\
@@ -33,9 +34,11 @@ noinst_HEADERS = drm-plugin.h utils.h list.h project.h prototypes.h
 plugindir = ${libdir}/surfman
 plugin_LTLIBRARIES = drm-plugin.la
 
+AVX_CFLAGS = -msee -msse2 -mavx
+
 drm_plugin_la_SOURCES = ${SRCS}
 drm_plugin_la_LDFLAGS = -module
-drm_plugin_la_CFLAGS = ${LIBUDEV_CFLAGS} ${LIBDRM_CFLAGS} ${LIBSURFMAN_CFLAGS} -W -Wall -Werror -g
+drm_plugin_la_CFLAGS = ${LIBUDEV_CFLAGS} ${LIBDRM_CFLAGS} ${LIBSURFMAN_CFLAGS} $(AVX_CFLAGS)
 drm_plugin_la_CPPFLAGS = ${LIBUDEV_CFLAGS} ${LIBDRM_CFLAGS} ${LIBSURFMAN_CFLAGS}
 drm_plugin_la_LIBADD = ${LIBUDEV_LIBS} ${LIBDRM_LIBS} ${LIBSURFMAN_LIBS}
 

@@ -295,17 +295,28 @@ static struct drm_framebuffer *i915_framebuffer_new(struct drm_device *device, s
     struct drm_framebuffer *drmfb;
     int err;
 
-    /* TODO: We now have a userland way to provide fbtap feature (and better) using
-     *       DRM. So that check will eventually go away with fbtap. */
+    //XXX FIXME XXX
+    //Quickly jamming in the i915 fb instead of i915_foreign. Clean this up later.
     if (surface->domid > 0) {
-        drmfb = framebuffer_foreign_ops.create(device, surface);
-        if (drmfb) {
-            goto succeed;
+        drmfb = framebuffer_i915_ops.create(device, surface);
+        if (!drmfb) {
+            DRM_WRN("Couldn't create i915 framebuffer for dom%u (%s). Falling back to dumb method.",
+                    surface->domid, strerror(errno));
+            goto dumb_fb;
         }
-        DRM_WRN("Could not create foreign framebuffer for dom%u (%s). Falling back to dumb method.",
-                surface->domid, strerror(errno));
+
+        err = drmfb->ops->map(drmfb);
+        if (err) {
+            DRM_ERR("Could not map dumb framebuffer for dom%u (%s).", surface->domid, strerror(-err));
+            errno = -err;
+            drmfb->ops->release(drmfb);
+            return NULL;
+        }
+
+        return drmfb;
     }
 
+dumb_fb:
     /* We consider DUMB method is "fallback" as we assume it is supported for
      * all devices of our HCL (pretty safe bet though).
      * TODO: It is checkable at initialization, and we should do that. Also, REFRESH is currently disabled
@@ -325,7 +336,7 @@ static struct drm_framebuffer *i915_framebuffer_new(struct drm_device *device, s
         drmfb->ops->release(drmfb);
         return NULL;
     }
-succeed:
+
     /* TODO: We might find useful to have a list of framebuffers for each device. */
     return drmfb;
 }

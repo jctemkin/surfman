@@ -58,6 +58,8 @@ extern struct drm_framebuffer *__dumb_framebuffer_create(struct drm_device *devi
 extern const struct drm_framebuffer_ops framebuffer_dumb_ops;
 /* framebuffer-i915_foreign.c */
 extern const struct drm_framebuffer_ops framebuffer_foreign_ops;
+/* framebuffer-i915.c */
+extern const struct drm_framebuffer_ops framebuffer_i915_ops;
 /* monitor.c */
 extern void drm_monitor_info(const struct drm_monitor *m);
 extern int drm_monitors_scan(struct drm_device *device);
